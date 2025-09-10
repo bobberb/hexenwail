@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O1 -Wall
+CFLAGS = -O2 -Wall
 CPPFLAGS = -DHAVE_STDINT_H
 #CPPFLAGS+= -DZDM
 AR = ar
