@@ -1231,8 +1231,17 @@ static void DrawTextureChains (entity_t *e)
 
 				for ( ; s ; s = s->texturechain)
 				{
-					if (s->flags & (SURF_DRAWSKY | SURF_DRAWTURB))
+					if (s->flags & SURF_DRAWSKY)
 						continue;
+
+					/* Opaque water (r_wateralpha 1.0) needs warp rendering,
+					 * which the VBO path can't do — defer to immediate mode */
+					if (s->flags & SURF_DRAWTURB)
+					{
+						if (deferred_count < MAX_BATCH_SURFS)
+							deferred_surfs[deferred_count++] = s;
+						continue;
+					}
 
 					if (s->flags & (SURF_DRAWFENCE | SURF_UNDERWATER))
 					{
