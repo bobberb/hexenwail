@@ -77,15 +77,30 @@ static const char *GL_DebugSeverityStr (GLenum severity)
 	}
 }
 
+static int gl_debug_error_count;	/* total HIGH/UNDEFINED errors this session */
+#define GL_DEBUG_ERROR_LIMIT	20	/* print first N, then suppress */
+
 static void APIENTRY GL_DebugCallback (GLenum source, GLenum type, GLuint id,
 	GLenum severity, GLsizei length, const char *message, const void *userParam)
 {
 	(void)source; (void)id; (void)length; (void)userParam;
 	if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
 		return;  /* skip noise */
-	Con_Printf ("GL [%s]: %s\n", GL_DebugSeverityStr(severity), message);
+
 	if (type == GL_DEBUG_TYPE_ERROR || type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR)
-		Con_Printf ("GL: fatal error type — check qconsole.log\n");
+	{
+		gl_debug_error_count++;
+		if (gl_debug_error_count == GL_DEBUG_ERROR_LIMIT)
+		{
+			Con_Printf ("GL [%s]: %s\n", GL_DebugSeverityStr(severity), message);
+			Con_Printf ("GL: suppressing further errors (hit %d limit)\n", GL_DEBUG_ERROR_LIMIT);
+			return;
+		}
+		if (gl_debug_error_count > GL_DEBUG_ERROR_LIMIT)
+			return;  /* suppressed */
+	}
+
+	Con_Printf ("GL [%s]: %s\n", GL_DebugSeverityStr(severity), message);
 }
 
 #define WARP_WIDTH		320
