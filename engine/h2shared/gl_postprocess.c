@@ -184,6 +184,28 @@ static qboolean PP_NeedsPostProcess (void)
 }
 
 /* ------------------------------------------------------------------ */
+/* FBO diagnostics                                                     */
+/* ------------------------------------------------------------------ */
+
+static int pp_check_warned;	/* bitmask: bit 0 = scene, bit 1 = native */
+
+static void PP_CheckFBO (const char *label, int bit)
+{
+	GLenum status;
+	if (pp_check_warned & (1 << bit))
+		return;  /* already warned for this FBO */
+	status = glCheckFramebufferStatus_fp(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		GLint fbo_id = 0;
+		glGetIntegerv_fp(GL_FRAMEBUFFER_BINDING, &fbo_id);
+		Con_Printf("PP_CheckFBO(%s): INCOMPLETE (status 0x%x, fbo=%d)\n",
+			   label, status, fbo_id);
+		pp_check_warned |= (1 << bit);
+	}
+}
+
+/* ------------------------------------------------------------------ */
 /* FBO management                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -939,6 +961,7 @@ void GL_PostProcess_Shutdown (void)
 	pp_native_active = false;
 	pp_prev_yaw = pp_prev_pitch = 0.0f;
 	pp_fbo_failed = false;
+	pp_check_warned = 0;
 	if (pp_copyback_tex) { glDeleteTextures_fp(1, &pp_copyback_tex); pp_copyback_tex = 0; }
 	pp_copyback_w = pp_copyback_h = 0;
 }
@@ -996,6 +1019,7 @@ void GL_PostProcess_BeginFrame (void)
 
 	/* bind scene FBO */
 	glBindFramebuffer_fp(GL_FRAMEBUFFER, pp_fbo);
+	PP_CheckFBO("BeginFrame:pp_fbo", 0);
 	pp_active = true;
 }
 
@@ -1170,6 +1194,7 @@ void GL_PostProcess_End3D (void)
 
 	/* Bind composite FBO — 2D will draw into this after we return */
 	glBindFramebuffer_fp(GL_FRAMEBUFFER, pp_native_fbo);
+	PP_CheckFBO("End3D:pp_native_fbo", 1);
 	glViewport_fp(0, 0, native_w, native_h);
 
 	/* Compute 3D-only effect strengths */
