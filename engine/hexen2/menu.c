@@ -3254,7 +3254,8 @@ static void M_Game_Key (int k)
 
 enum
 {
-	GPAD_SENSX = 0,
+	GPAD_ENABLE = 0,
+	GPAD_SENSX,
 	GPAD_SENSY,
 	GPAD_INVERT,
 	GPAD_SWAPSTICKS,
@@ -3289,6 +3290,9 @@ static void M_Gamepad_Draw (void)
 		M_PrintWhite (64, 72, "Controller (not connected)");
 
 	y = 90;
+
+	M_Print (32, y + 8*GPAD_ENABLE, "Gamepad Enabled");
+	M_DrawCheckbox (220, y + 8*GPAD_ENABLE, in_gamepad.integer);
 
 	M_Print (32, y + 8*GPAD_SENSX, "Yaw Speed");
 	r = (joy_sensitivity_yaw.value - 60) / (720 - 60);
@@ -3340,6 +3344,9 @@ static void M_Gamepad_AdjustSliders (int dir)
 
 	switch (gamepad_cursor)
 	{
+	case GPAD_ENABLE:
+		Cvar_Set ("gamepad", in_gamepad.integer ? "0" : "1");
+		break;
 	case GPAD_SENSX:
 		f = joy_sensitivity_yaw.value + dir * 30;
 		if (f < 60)  f = 60;
