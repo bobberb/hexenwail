@@ -1105,7 +1105,11 @@ static void DrawTextureChains (entity_t *e)
 			}
 		}
 		glColorMask_fp(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glDisable_fp(GL_STENCIL_TEST);
+		/* Leave stencil test ON: any world geometry that draws
+		 * closer than the sky surface resets stencil to 0,
+		 * so the skybox only fills truly visible sky pixels. */
+		glStencilFunc_fp(GL_ALWAYS, 0, 0xFF);
+		glStencilOp_fp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	}
 
 	for (i = 0; i < cl.worldmodel->numtextures; i++)
@@ -1388,6 +1392,11 @@ static void DrawTextureChains (entity_t *e)
 
 		t->texturechain = NULL;
 	}
+
+	/* Disable stencil test left on by the sky pre-pass.
+	 * Sky_DrawSky will re-enable with its own settings. */
+	if (have_stencil)
+		glDisable_fp(GL_STENCIL_TEST);
 }
 
 /*
