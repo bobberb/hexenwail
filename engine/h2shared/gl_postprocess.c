@@ -1144,7 +1144,7 @@ void GL_PostProcess_End3D (void)
 					glDeleteTextures_fp(1, &pp_copyback_tex);
 				glGenTextures_fp(1, &pp_copyback_tex);
 				glBindTexture_fp(GL_TEXTURE_2D, pp_copyback_tex);
-				glTexImage2D_fp(GL_TEXTURE_2D, 0, GL_RGB10_A2, w, h, 0,
+				glTexImage2D_fp(GL_TEXTURE_2D, 0, GL_RGBA8, w, h, 0,
 						GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 				glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameterf_fp(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
