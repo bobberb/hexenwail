@@ -732,15 +732,31 @@ static void CL_RelinkEntities (void)
 		{
 			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin,  dl->origin);
-			dl->radius = 200;	/* torch: fixed radius, not scaled by gl_flashintensity */
+			/* Player torch: project light forward so it illuminates ahead */
+			if (i == cl.viewentity)
+			{
+				vec3_t	fwd;
+				AngleVectors (ent->angles, fwd, NULL, NULL);
+				VectorMA (dl->origin, 12, fwd, dl->origin);
+			}
+			{	/* Smooth organic flicker: layered sine waves per-torch */
+				float t = cl.time + i * 0.71f; /* phase offset per entity */
+				float flicker = 1.0f
+					+ 0.06f * sinf(t * 5.3f)
+					+ 0.04f * sinf(t * 8.7f)
+					+ 0.03f * sinf(t * 13.1f);
+				dl->radius = 200 * flicker;
+			}
 			dl->die = cl.time + 0.001;
 			dl->torch = true;
 #		ifdef GLQUAKE
 			if (gl_colored_dynamic_lights.integer)
 			{
-				dl->color[0] = 0.8;
-				dl->color[1] = 0.4;
-				dl->color[2] = 0.2;
+				float t = cl.time + i * 0.71f;
+				float warm = 0.95f + 0.05f * sinf(t * 3.1f); /* subtle color warmth shift */
+				dl->color[0] = 0.8f * warm;
+				dl->color[1] = 0.4f * (2.0f - warm);
+				dl->color[2] = 0.2f;
 				dl->color[3] = 0.7;
 			}
 #		endif

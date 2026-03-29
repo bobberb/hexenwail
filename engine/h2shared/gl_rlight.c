@@ -26,7 +26,7 @@
 
 static int	r_dlightframecount;
 
-cvar_t	r_lerplightstyles = {"r_lerplightstyles", "1", CVAR_ARCHIVE};	/* smooth lightstyle interpolation */
+cvar_t	r_lerplightstyles = {"r_lerplightstyles", "2", CVAR_ARCHIVE};	/* 0=off, 1=lerp, 2=lerp+smooth */
 
 
 /*
@@ -86,10 +86,25 @@ void R_AnimateLight (void)
 			light_next = (cl_lightstyle[i].map[v_next] - 'a') * 22;
 		}
 		/* Smoothly interpolate between current and next light level */
-		if (r_lerplightstyles.integer)
-			d_lightstylevalue[i] = (int)(light_curr + (light_next - light_curr) * frac);
-		else
-			d_lightstylevalue[i] = light_curr;
+		{
+			int target;
+			if (r_lerplightstyles.integer)
+				target = (int)(light_curr + (light_next - light_curr) * frac);
+			else
+				target = light_curr;
+
+			/* Low-pass filter: smooth out sharp flicker transitions.
+			 * Blend toward target at ~80% per 0.1s (10Hz base rate).
+			 * This softens harsh on/off patterns while keeping the
+			 * overall animation feel. */
+			if (r_lerplightstyles.integer >= 2)
+			{
+				float blend = 1.0f - expf(-host_frametime * 12.0f);
+				d_lightstylevalue[i] = (int)(d_lightstylevalue[i] + (target - d_lightstylevalue[i]) * blend);
+			}
+			else
+				d_lightstylevalue[i] = target;
+		}
 	}
 }
 
