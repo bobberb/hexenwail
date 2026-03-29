@@ -497,6 +497,8 @@ static qboolean VID_SetMode (int modenum)
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
 	SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+	if (COM_CheckParm("-developer"))
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
 #endif
 
 	if (multisample)
@@ -894,15 +896,18 @@ static void GL_Init (void)
 	/* load shader and VBO function pointers (Emscripten uses direct calls) */
 	GL_LoadFunctionPointers();
 
-	/* GL 4.3 debug output — logs errors to console/qconsole.log before GPU hang */
-	glDebugMessageCallback_fp = (glDebugMessageCallback_f)
-		SDL_GL_GetProcAddress("glDebugMessageCallback");
-	if (glDebugMessageCallback_fp)
+	/* GL 4.3 debug output — only with -developer (requires debug context) */
+	if (COM_CheckParm("-developer"))
 	{
-		glEnable_fp(GL_DEBUG_OUTPUT);
-		glEnable_fp(GL_DEBUG_OUTPUT_SYNCHRONOUS);  /* callback fires before bad call returns */
-		glDebugMessageCallback_fp(GL_DebugCallback, NULL);
-		Con_SafePrintf("GL debug output enabled\n");
+		glDebugMessageCallback_fp = (glDebugMessageCallback_f)
+			SDL_GL_GetProcAddress("glDebugMessageCallback");
+		if (glDebugMessageCallback_fp)
+		{
+			glEnable_fp(GL_DEBUG_OUTPUT);
+			glEnable_fp(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback_fp(GL_DebugCallback, NULL);
+			Con_SafePrintf("GL debug output enabled\n");
+		}
 	}
 #endif
 
