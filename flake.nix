@@ -104,7 +104,7 @@
           pname = "neojanq-linux-glhexen2";
           srcSubdir = "engine/hexen2";
           makeTarget = "glh2";
-          binaryName = "glh2";
+          binaryName = "glhexen2";   # Linux GL_BINARY; Win64 makes glh2.exe
         };
         linux-glhwcl = mkLinux {
           pname = "neojanq-linux-glhwcl";
