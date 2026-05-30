@@ -29,15 +29,20 @@
         libX11 libXxf86vm libXxf86dga libXrandr libXext libXi
       ]);
 
+      # Shanjaq's r6303-era code predates gcc 14's promotion of implicit
+      # int->pointer conversion from warning to error.  Use gcc 13 so the
+      # original source compiles unmodified (byte-for-byte provenance).
+      eraGcc = pkgs.gcc13;
+      eraStdenv = pkgs.overrideCC pkgs.stdenv eraGcc;
+
       mkLinux = { pname, srcSubdir, makeTarget, binaryName, deps ? linuxClientDeps }:
-        pkgs.stdenv.mkDerivation {
+        eraStdenv.mkDerivation {
           inherit pname version;
           src = self;
-          nativeBuildInputs = commonNative ++ [ pkgs.gcc ];
+          nativeBuildInputs = commonNative;
           buildInputs = deps;
           dontConfigure = true;
           enableParallelBuilding = true;
-          NIX_CFLAGS_COMPILE = "-Wno-error";
           buildPhase = ''
             runHook preBuild
             cd ${srcSubdir}
