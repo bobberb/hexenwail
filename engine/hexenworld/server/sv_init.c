@@ -200,7 +200,7 @@ void SV_SaveSpawnparms (void)
 
 		// call the progs to get default spawn parms for the new client
 		*sv_globals.self = EDICT_TO_PROG(host_client->edict);
-		PR_ExecuteProgram (*sv_globals.SetChangeParms);
+		PR_ExecuteProgram (*sv_globals.SetChangeParms, NULL);
 		for (j = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->spawn_parms[j] = sv_globals.parm[j];
 	}
@@ -334,7 +334,8 @@ void SV_SpawnServer (const char *server, const char *startspot)
 	// load progs to get entity field count
 	// which determines how big each edict is
 	PR_LoadProgs ();
-	Host_LoadStrings();
+	/* uhexen2-id4i (neojanq build): Host_LoadStrings gained path_id arg. */
+	Host_LoadStrings(NULL);
 
 	// allocate edicts
 	sv.edicts = (edict_t *) Hunk_AllocName (MAX_EDICTS*pr_edict_size, "edicts");

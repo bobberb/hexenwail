@@ -465,7 +465,7 @@ static void SV_Begin_f (void)
 			// call the spawn function
 			*sv_globals.time = sv.time;
 			*sv_globals.self = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram (SpectatorConnect);
+			PR_ExecuteProgram (SpectatorConnect, NULL);
 		}
 	}
 	else
@@ -479,12 +479,12 @@ static void SV_Begin_f (void)
 		// call the spawn function
 		*sv_globals.time = sv.time;
 		*sv_globals.self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram (*sv_globals.ClientConnect);
+		PR_ExecuteProgram (*sv_globals.ClientConnect, NULL);
 
 		// actually spawn the player
 		*sv_globals.time = sv.time;
 		*sv_globals.self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram (*sv_globals.PutClientInServer);
+		PR_ExecuteProgram (*sv_globals.PutClientInServer, NULL);
 	}
 
 	// clear the net statistics, because connecting gives a bogus picture
@@ -822,7 +822,7 @@ static void SV_Kill_f (void)
 
 	*sv_globals.time = sv.time;
 	*sv_globals.self = EDICT_TO_PROG(sv_player);
-	PR_ExecuteProgram (*sv_globals.ClientKill);
+	PR_ExecuteProgram (*sv_globals.ClientKill, NULL);
 }
 
 /*
@@ -1287,7 +1287,7 @@ static void SV_RunCmd (usercmd_t *ucmd)
 
 		*sv_globals.time = sv.time;
 		*sv_globals.self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram (*sv_globals.PlayerPreThink);
+		PR_ExecuteProgram (*sv_globals.PlayerPreThink, NULL);
 
 		SV_RunThink (sv_player);
 	}
@@ -1383,13 +1383,13 @@ static void SV_RunCmd (usercmd_t *ucmd)
 			{
 				*sv_globals.self = EDICT_TO_PROG(sv_player);
 				*sv_globals.other = EDICT_TO_PROG(ent);
-				PR_ExecuteProgram (sv_player->v.touch);
+				PR_ExecuteProgram (sv_player->v.touch, NULL);
 			}
 			if (!ent->v.touch || (playertouch[n/8]&(1<<(n%8))))
 				continue;
 			*sv_globals.self = EDICT_TO_PROG(ent);
 			*sv_globals.other = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram (ent->v.touch);
+			PR_ExecuteProgram (ent->v.touch, NULL);
 			playertouch[n/8] |= 1 << (n%8);
 		}
 	}
@@ -1409,14 +1409,14 @@ static void SV_PostRunCmd(void)
 	{
 		*sv_globals.time = sv.time;
 		*sv_globals.self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram (*sv_globals.PlayerPostThink);
+		PR_ExecuteProgram (*sv_globals.PlayerPostThink, NULL);
 		SV_RunNewmis ();
 	}
 	else if (SpectatorThink)
 	{
 		*sv_globals.time = sv.time;
 		*sv_globals.self = EDICT_TO_PROG(sv_player);
-		PR_ExecuteProgram (SpectatorThink);
+		PR_ExecuteProgram (SpectatorThink, NULL);
 	}
 }
 

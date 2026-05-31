@@ -162,7 +162,7 @@ qboolean SV_RunThink (edict_t *ent)
 	*sv_globals.time = thinktime;
 	*sv_globals.self = EDICT_TO_PROG(ent);
 	*sv_globals.other = EDICT_TO_PROG(sv.edicts);
-	PR_ExecuteProgram (ent->v.think);
+	PR_ExecuteProgram (ent->v.think, NULL);
 
 	if (ent->free)
 	{
@@ -192,14 +192,14 @@ void SV_Impact (edict_t *e1, edict_t *e2)
 	{
 		*sv_globals.self = EDICT_TO_PROG(e1);
 		*sv_globals.other = EDICT_TO_PROG(e2);
-		PR_ExecuteProgram (e1->v.touch);
+		PR_ExecuteProgram (e1->v.touch, NULL);
 	}
 
 	if (e2->v.touch && e2->v.solid != SOLID_NOT)
 	{
 		*sv_globals.self = EDICT_TO_PROG(e2);
 		*sv_globals.other = EDICT_TO_PROG(e1);
-		PR_ExecuteProgram (e2->v.touch);
+		PR_ExecuteProgram (e2->v.touch, NULL);
 	}
 
 	*sv_globals.self = old_self;
@@ -635,7 +635,7 @@ static qboolean SV_Push (edict_t *pusher, vec3_t move)
 		{
 			*sv_globals.self = EDICT_TO_PROG(pusher);
 			*sv_globals.other = EDICT_TO_PROG(check);
-			PR_ExecuteProgram (pusher->v.blocked);
+			PR_ExecuteProgram (pusher->v.blocked, NULL);
 		}
 
 		// move back any entities we already moved
@@ -886,7 +886,7 @@ static void SV_PushRotate (edict_t *pusher, float movetime)
 			{
 				*sv_globals.self = EDICT_TO_PROG(pusher);
 				*sv_globals.other = EDICT_TO_PROG(check);
-				PR_ExecuteProgram (pusher->v.blocked);
+				PR_ExecuteProgram (pusher->v.blocked, NULL);
 			}
 
 			// move back any entities we already moved
@@ -1257,7 +1257,7 @@ static void SV_PushRotate (edict_t *pusher, float movetime)
 				{
 					*sv_globals.self = EDICT_TO_PROG(pusher);
 					*sv_globals.other = EDICT_TO_PROG(check);
-					PR_ExecuteProgram (pusher->v.blocked);
+					PR_ExecuteProgram (pusher->v.blocked, NULL);
 				}
 
 				// move back any entities we already moved
@@ -1336,7 +1336,7 @@ static void SV_Physics_Pusher (edict_t *ent)
 		*sv_globals.time = sv.time;
 		*sv_globals.self = EDICT_TO_PROG(ent);
 		*sv_globals.other = EDICT_TO_PROG(sv.edicts);
-		PR_ExecuteProgram (ent->v.think);
+		PR_ExecuteProgram (ent->v.think, NULL);
 		if (ent->free)
 			return;
 
@@ -1719,7 +1719,7 @@ void SV_Physics_Client (edict_t *ent, int num)
 //
 	*sv_globals.time = sv.time;
 	*sv_globals.self = EDICT_TO_PROG(ent);
-	PR_ExecuteProgram (*sv_globals.PlayerPreThink);
+	PR_ExecuteProgram (*sv_globals.PlayerPreThink, NULL);
 
 //
 // do a move
@@ -1783,7 +1783,7 @@ void SV_Physics_Client (edict_t *ent, int num)
 
 	*sv_globals.time = sv.time;
 	*sv_globals.self = EDICT_TO_PROG(ent);
-	PR_ExecuteProgram (*sv_globals.PlayerPostThink);
+	PR_ExecuteProgram (*sv_globals.PlayerPostThink, NULL);
 }
 #else
 void SV_Physics_Client (edict_t	*ent)
@@ -2038,7 +2038,7 @@ void SV_ProgStartFrame (void)
 	*sv_globals.self = EDICT_TO_PROG(sv.edicts);
 	*sv_globals.other = EDICT_TO_PROG(sv.edicts);
 	*sv_globals.time = sv.time;
-	PR_ExecuteProgram (*sv_globals.StartFrame);
+	PR_ExecuteProgram (*sv_globals.StartFrame, NULL);
 }
 
 
@@ -2125,7 +2125,7 @@ static void SV_RunEntity (edict_t *ent)
 				{	// callback function
 					*sv_globals.self = EDICT_TO_PROG(ent2);
 					*sv_globals.other = EDICT_TO_PROG(ent);
-					PR_ExecuteProgram(ent2->v.chainmoved);
+					PR_ExecuteProgram(ent2->v.chainmoved, NULL);
 				}
 
 				ent2 = PROG_TO_EDICT(ent2->v.movechain);

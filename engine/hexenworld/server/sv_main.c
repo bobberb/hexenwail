@@ -229,14 +229,14 @@ void SV_DropClient (client_t *drop)
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
 			*sv_globals.self = EDICT_TO_PROG(drop->edict);
-			PR_ExecuteProgram (*sv_globals.ClientDisconnect);
+			PR_ExecuteProgram (*sv_globals.ClientDisconnect, NULL);
 		}
 		else if (SpectatorDisconnect)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
 			*sv_globals.self = EDICT_TO_PROG(drop->edict);
-			PR_ExecuteProgram (SpectatorDisconnect);
+			PR_ExecuteProgram (SpectatorDisconnect, NULL);
 		}
 	}
 	else if (dmMode.integer == DM_SIEGE && SV_PROGS_HAVE_SIEGE)
@@ -247,7 +247,7 @@ void SV_DropClient (client_t *drop)
 			// to make sure he leaves it behind
 			Con_Printf("Client in unspawned state had puzzle piece, forcing drop\n");
 			*sv_globals.self = EDICT_TO_PROG(drop->edict);
-			PR_ExecuteProgram (*sv_globals.ClientDisconnect);
+			PR_ExecuteProgram (*sv_globals.ClientDisconnect, NULL);
 		}
 	}
 
@@ -674,7 +674,7 @@ static void SVC_DirectConnect (void)
 	newcl->lockedtill = 0;
 
 	// call the progs to get default spawn parms for the new client
-	PR_ExecuteProgram (*sv_globals.SetNewParms);
+	PR_ExecuteProgram (*sv_globals.SetNewParms, NULL);
 	for (i = 0; i < NUM_SPAWN_PARMS; i++)
 		newcl->spawn_parms[i] = sv_globals.parm[i];
 

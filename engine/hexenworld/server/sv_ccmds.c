@@ -378,7 +378,7 @@ static void SV_Kick_f (void)
 
 			*sv_globals.time = sv.time;
 			*sv_globals.self = EDICT_TO_PROG(sv_player);
-			PR_ExecuteProgram (*sv_globals.ClientKill);
+			PR_ExecuteProgram (*sv_globals.ClientKill, NULL);
 			return;
 		}
 	}
@@ -423,7 +423,7 @@ static void SV_Smite_f (void)
 			//call the hc SmitePlayer function
 			*sv_globals.time = sv.time;
 			*sv_globals.self = EDICT_TO_PROG(cl->edict);
-			PR_ExecuteProgram (*sv_globals.SmitePlayer);
+			PR_ExecuteProgram (*sv_globals.SmitePlayer, NULL);
 
 			//restore current state
 			*sv_globals.self = old_self;
