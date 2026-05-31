@@ -74,6 +74,12 @@
           ];
           dontConfigure = true;
           enableParallelBuilding = true;
+          # nixpkgs mingw cross-gcc is gcc 15+ which defaults to C23, where
+          # 'false' is a reserved keyword.  Era code uses 'false' as an enum
+          # constant.  -std=gnu99 reverts to a standard where the keyword is
+          # available as an identifier.  -fcommon for the same global-merging
+          # reason as the Linux build.
+          NIX_CFLAGS_COMPILE = "-std=gnu99 -fcommon";
           buildPhase = ''
             runHook preBuild
             export TARGET=x86_64-w64-mingw32
@@ -85,7 +91,7 @@
             export STRIPPER=$TARGET-strip
             export W64BUILD=1
             cd ${srcSubdir}
-            make ${makeTarget} -j$NIX_BUILD_CORES
+            make ${makeTarget} USE_CODEC_TIMIDITY=no -j$NIX_BUILD_CORES
             runHook postBuild
           '';
           installPhase = ''

@@ -785,7 +785,9 @@ LIBWINSOCK=wsock32
 endif
 
 CPPFLAGS+= -DWIN32_LEAN_AND_MEAN
-INCLUDES+= -I$(OSLIBS)/windows/misc/include -I$(OSLIBS)/windows/dxsdk/include
+# uhexen2-id4i (neojanq build): Win64 section was missing the SDL include
+# path that the Win32 section has at the analogous location.  Add it.
+INCLUDES+= -I$(OSLIBS)/windows/misc/include -I$(OSLIBS)/windows/dxsdk/include -I$(OSLIBS)/windows/SDL/include
 CFLAGS  += -m64
 LDFLAGS += -m64 -mwindows
 LDFLAGS += -l$(LIBWINSOCK) -lwinmm
