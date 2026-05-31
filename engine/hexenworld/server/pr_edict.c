@@ -1921,3 +1921,12 @@ int PR_AllocString (int size, char **ptr)
 	return -1 - i;
 }
 
+/* uhexen2-id4i (neojanq build): h2shared/progs.h declares PR_GetFloat
+ * (used by the G_FLOAT macro in newer shared code paths); HW server's
+ * pr_edict.c lacked the definition. H2 also tracks params_used here
+ * but that's an H2-only feature — minimal accessor here. */
+const float* PR_GetFloat(int num)
+{
+	return &pr_globals[num];
+}
+
