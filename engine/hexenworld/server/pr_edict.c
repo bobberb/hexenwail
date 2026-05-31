@@ -1480,7 +1480,7 @@ static const char maplist_name[] = "maplist.txt";
 	unsigned int	id0, id1;
 	fshandle_t	FH;
 
-	FH.length = (long) FS_OpenFile (maplist_name, & FH.file, &id1);
+	FH.length = (long) FS_OpenFile (maplist_name, & FH.file, &id1, NULL);
 	FH.pak = file_from_pak;
 	if (FH.file == NULL)
 		return def_progname;
