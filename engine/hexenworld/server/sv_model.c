@@ -199,7 +199,8 @@ static qmodel_t *Mod_LoadModel (qmodel_t *mod, qboolean crash)
 //
 // load the file
 //
-	buf = FS_LoadTempFile (mod->name, & mod->path_id);
+	/* uhexen2-id4i (neojanq build): FS_LoadTempFile gained dir_path_id arg. */
+	buf = FS_LoadTempFile (mod->name, & mod->path_id, NULL);
 	if (!buf)
 	{
 		if (crash)
@@ -308,7 +309,8 @@ static void Mod_LoadEntities (lump_t *l)
 	q_strlcat(entfilename, ".ent", sizeof(entfilename));
 	Con_DPrintf("trying to load %s\n", entfilename);
 	mark = Hunk_LowMark();
-	ents = (char *) FS_LoadHunkFile (entfilename, &path_id);
+	/* uhexen2-id4i (neojanq build): FS_LoadHunkFile gained dir_path_id arg. */
+	ents = (char *) FS_LoadHunkFile (entfilename, &path_id, NULL);
 	if (ents)
 	{
 		// use ent file only from the same gamedir as the map

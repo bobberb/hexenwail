@@ -1448,7 +1448,8 @@ void ED_LoadFromFile (const char *data)
 		}
 
 		*sv_globals.self = EDICT_TO_PROG(ent);
-		PR_ExecuteProgram (func - pr_functions);
+		/* uhexen2-id4i (neojanq build): PR_ExecuteProgram gained funcname arg. */
+		PR_ExecuteProgram (func - pr_functions, "ED_LoadFromFile");
 		SV_FlushSignon();
 	}
 
@@ -1625,7 +1626,8 @@ void PR_LoadProgs (void)
 		gefvCache[i].field[0] = 0;
 
 	progname = PR_GetProgFilename();
-	progs = (dprograms_t *)FS_LoadHunkFile (progname, NULL);
+	/* uhexen2-id4i (neojanq build): FS_LoadHunkFile gained dir_path_id arg. */
+	progs = (dprograms_t *)FS_LoadHunkFile (progname, NULL, NULL);
 	if (!progs)
 		Host_Error ("%s: couldn't load %s", __thisfunc__, progname);
 	Con_DPrintf ("Programs occupy %luK.\n", (unsigned long)(fs_filesize/1024));
